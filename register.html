@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Create Account - SWIFT</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    background: #0a0f1e;
+    background-image: 
+      radial-gradient(circle at 20% 50%, rgba(34, 197, 94, 0.15) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(34, 197, 94, 0.1) 0%, transparent 50%);
+    color:#fff;
+    font-family:'Segoe UI',system-ui;
+    display:flex;justify-content:center;align-items:center;min-height:100vh;padding:20px
+  }
+  .box{
+    background:#111827;
+    border:1px solid #1f2937;
+    padding:40px;
+    border-radius:20px;
+    width:100%;
+    max-width:450px;
+  }
+  h1{color:#22c55e;font-size:28px;margin-bottom:10px;text-align:center}
+  .sub{color:#94a3b8;text-align:center;margin-bottom:25px;font-size:14px}
+  label{font-size:13px;color:#cbd5e1;margin-top:15px;display:block}
+  input{
+    width:100%;padding:14px;margin-top:6px;background:#0a0f1e;border:1px solid #334155;
+    color:#fff;border-radius:10px;font-size:15px
+  }
+  input:focus{outline:none;border-color:#22c55e}
+  .btn{
+    width:100%;padding:16px;margin-top:25px;background:#22c55e;color:#0a0f1e;
+    border:none;border-radius:12px;font-size:17px;font-weight:700;cursor:pointer
+  }
+  .btn:hover{opacity:0.9}
+  .footer{text-align:center;margin-top:20px;font-size:13px;color:#94a3b8}
+  .footer a{color:#22c55e;text-decoration:none}
+</style>
+</head>
+<body>
+  <div class="box">
+    <h1>Join SWIFT 💰</h1>
+    <p class="sub">Create your account and start earning 5% monthly</p>
+    
+    <form id="register-form">
+      <label>Full Name</label>
+      <input type="text" id="name" placeholder="Enter your full name" required>
+      
+      <label>Email</label>
+      <input type="email" id="email" placeholder="Enter your email" required>
+      
+      <label>M-Pesa Phone</label>
+      <input type="tel" id="phone" placeholder="Enter M-Pesa number" required>
+      
+      <button type="submit" class="btn">Create Account & Start Investing</button>
+    </form>
+
+    <p class="footer">Already have an account? <a href="/login.html">Login</a></p>
+  </div>
+
+<script src="https://cdn.auth0.com/js/auth0-spa-js/2.1/auth0-spa-js.production.js"></script>
+<script>
+let auth0;
+async function init() {
+  auth0 = await createAuth0Client({
+    domain: "dev-423epnlkd231fvw0.us.auth0.com",
+    client_id: "DAFUBnFPvwSW9MKDwCyu64Nux9VDIT3r"
+  });
+  if(await auth0.isAuthenticated()) window.location = '/invest.html';
+}
+init();
+
+document.getElementById('register-form').onsubmit = (e) => {
+  e.preventDefault();
+  auth0.loginWithRedirect({
+    authorizationParams: {
+      screen_hint: 'signup',
+      audience: "https://pesaearn-api",
+      redirect_uri: window.location.origin + "/onboarding.html"
+    }
+  });
+}
+</script>
+</body>
+</html>
