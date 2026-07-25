@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Admin - Pesaearn</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  body{background:#0f172a;color:#e2e8f0;font-family:system-ui;padding:20px}
+  h1{color:#22c55e}
+  table{width:100%;border-collapse:collapse;margin-top:20px;background:#1e293b;border-radius:8px;overflow:hidden}
+  th,td{padding:12px;text-align:left;border-bottom:1px solid #334155}
+  th{background:#334155}
+  .pending{color:#f59e0b;font-weight:bold}
+  .paid{color:#22c55e}
+  button{background:#22c55e;color:#0f172a;border:none;padding:8px 14px;border-radius:6px;cursor:pointer;font-weight:bold}
+  button:hover{opacity:0.9}
+  .login-box{max-width:400px;margin:100px auto;background:#1e293b;padding:20px;border-radius:12px}
+  input{width:100%;padding:12px;margin:10px 0;background:#0f172a;border:1px solid #334155;color:#fff;border-radius:8px}
+</style>
+</head>
+<body>
+
+<div id="login" class="login-box">
+  <h1>Admin Login</h1>
+  <input type="password" id="admin-key" placeholder="Enter Admin Key">
+  <button onclick="login()">Login</button>
+</div>
+
+<div id="dashboard" style="display:none">
+  <h1>📊 Admin Dashboard</h1>
+  <h2>Pending SWIFT Deposits</h2>
+  <table id="deposits-table">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>UserID</th>
+        <th>Amount</th>
+        <th>Bank Ref</th>
+        <th>Status</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+  <button onclick="logout()" style="background:#ef4444;color:#fff;margin-top:20px">Logout</button>
+</div>
+
+<script>
+const ADMIN_KEY = localStorage.getItem('admin_key');
+
+async function login() {
+  const key = document.getElementById('admin-key').value;
+  localStorage.setItem('admin_key', key);
+  await loadDeposits();
+}
+
+function logout() {
+  localStorage.removeItem('admin_key');
+  location.reload();
+}
+
+async function loadDeposits() {
+  const res = await fetch('/api/admin/deposits', {
+    headers: { 'x-admin-key': ADMIN_KEY }
+  });
+  
+  if(res.status === 401) {
+    alert('Wrong Admin Key');
+    localStorage.removeItem('admin_key');
+    return;
+  }
+
+  const deposits = await res.json();
+  const tbody = document.querySelector('#deposits-table tbody');
+  tbody.innerHTML = '';
+
+  deposits.filter(d => d.method === 'swift' && d.status === 'pending').forEach(d => {
+    tbody.innerHTML += `
+      <tr>
+        <td>${new Date(d.createdAt).toLocaleDateString()}</td>
+        <td>${d.userId}</td>
+        <td>$${d.amount}</td>
+        <td>${d.reference}</td>
+        <td class="pending">PENDING</td>
+        <td><button onclick="approve('${d._id}')">Approve</button></td>
+      </tr>
+    `;
+  });
+
+  document.getElementById('login').style.display = 'none';
+  document.getElementById('dashboard').style.display = 'block';
+}
+
+async function approve(depositId) {
+  if(!confirm('Credit this deposit?')) return;
+  
+  const res = await fetch('/api/admin-approve', {
+    method: 'POST',
+    headers: { 
+      'Content-Type': 'application/json',
+      'x-admin-key': ADMIN_KEY 
+    },
+    body: JSON.stringify({ depositId })
+  });
+
+  if(res.ok) {
+    alert('Deposit Approved & Credited!');
+    loadDeposits();
+  } else {
+    alert('Error approving');
+  }
+}
+
+// Auto login if key exists
+if(ADMIN_KEY) loadDeposits();
+</script>
+</body>
+</html>
