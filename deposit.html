@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Deposit Funds - Pesaearn</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  body{background:#0f172a;color:#e2e8f0;font-family:system-ui;padding:20px;max-width:600px;margin:0 auto}
+  h1{text-align:center;color:#22c55e}
+  .card{background:#1e293b;padding:20px;border-radius:12px;margin:15px 0;border:1px solid #334155}
+  .card h2{margin:0 0 10px;color:#fff}
+  input, button{width:100%;padding:12px;margin-top:10px;border-radius:8px;border:none;font-size:16px}
+  input{background:#0f172a;color:#fff;border:1px solid #334155}
+  button{background:#22c55e;color:#0f172a;font-weight:bold;cursor:pointer}
+  button:hover{opacity:0.9}
+  .fee{font-size:12px;color:#94a3b8}
+  .balance{font-size:24px;text-align:center;margin:20px 0;color:#22c55e}
+</style>
+</head>
+<body>
+
+<h1>💰 Deposit Funds</h1>
+<div class="balance">Current Balance: $<span id="balance">0.00</span></div>
+
+<!-- 1. PESAPAL -->
+<div class="card">
+  <h2>🇰🇪 Pesapal - M-Pesa / Card / Bank</h2>
+  <p class="fee">Instant • Min 100 KES • 1.5% Fee</p>
+  <input type="number" id="pesapal-amount" placeholder="Amount in KES" min="100">
+  <input type="tel" id="pesapal-phone" placeholder="M-Pesa Number: 254712345678">
+  <button onclick="depositPesapal()">Deposit with Pesapal</button>
+</div>
+
+<!-- 2. STRIPE -->
+<div class="card">
+  <h2>💳 Stripe - Visa / Mastercard</h2>
+  <p class="fee">Instant • Min $10 • 2.9% + $0.30 Fee</p>
+  <input type="number" id="stripe-amount" placeholder="Amount in USD" min="10">
+  <button onclick="depositStripe()">Deposit with Card</button>
+</div>
+
+<!-- 3. SWIFT -->
+<div class="card">
+  <h2>🏦 SWIFT Bank Wire</h2>
+  <p class="fee">2-5 Days • Min $500 • $25 Fee</p>
+  <input type="number" id="swift-amount" placeholder="Amount in USD" min="500">
+  <input type="text" id="swift-ref" placeholder="Bank Transaction Reference">
+  <button onclick="depositSwift()">I Have Sent The Wire</button>
+  <p style="font-size:12px">Bank: Equity Bank Kenya<br>SWIFT: EQBLKENA<br>Account: Pesaearn Ltd<br><b>Use your UserID as reference</b></p>
+</div>
+
+<button onclick="logout()" style="background:#ef4444;color:#fff">Logout</button>
+
+<script src="https://cdn.auth0.com/js/auth0-spa-js/2.1/auth0-spa-js.production.js"></script>
+<script>
+let auth0, user, token;
+
+async function init() {
+  auth0 = await createAuth0Client({
+    domain: "dev-423epnlkd231fvw0.us.auth0.com",
+    client_id: "DAFUBnFPvwSW9MKDwCyu64Nux9VDIT3r",
+    authorizationParams: { audience: "https://pesaearn-api" }
+  });
+
+  const isAuthenticated = await auth0.isAuthenticated();
+  if(!isAuthenticated) return window.location = '/login.html';
+
+  user = await auth0.getUser();
+  token = await auth0.getTokenSilently();
+  loadBalance();
+}
+
+async function loadBalance() {
+  const res = await fetch('/api/user-profile', { headers: {Authorization: `Bearer ${token}`} });
+  const data = await res.json();
+  document.getElementById('balance').innerText = (data.balance || 0).toFixed(2);
+}
+
+async function depositPesapal() {
+  const amount = document.getElementById('pesapal-amount').value;
+  const phone = document.getElementById('pesapal-phone').value;
+  if(!amount || !phone) return alert('Fill amount and phone');
+
+  const res = await fetch('/api/deposits/pesapal', {
+    method: 'POST',
+    headers: {Authorization: `Bearer ${token}`, 'Content-Type': 'application/json'},
+    body: JSON.stringify({amount: parseFloat(amount), phone})
+  });
+  const {redirect_url} = await res.json();
+  window.location = redirect_url;
+}
+
+async function depositStripe() {
+  const amount = document.getElementById('stripe-amount').value;
+  if(!amount) return alert('Enter amount');
+
+  const res = await fetch('/api/deposits/stripe', {
+    method: 'POST',
+    headers: {Authorization: `Bearer ${token}`, 'Content-Type': 'application/json'},
+    body: JSON.stringify({amount: parseFloat(amount)})
+  });
+  const {url} = await res.json();
+  window.location = url;
+}
+
+async function depositSwift() {
+  const amount = document.getElementById('swift-amount').value;
+  const swiftReference = document.getElementById('swift-ref').value;
+  if(!amount || !swiftReference) return alert('Enter amount and bank reference');
+
+  await fetch('/api/deposits/swift', {
+    method: 'POST',
+    headers: {Authorization: `Bearer ${token}`, 'Content-Type': 'application/json'},
+    body: JSON.stringify({amount: parseFloat(amount), swiftReference})
+  });
+  alert('SWIFT deposit submitted. We will verify in 24h and credit your account.');
+  location.reload();
+}
+
+function logout() { auth0.logout({ logoutParams: { returnTo: window.location.origin } }); }
+
+init();
+</script>
+</body>
+</html>
