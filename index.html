@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Swift Investment</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Poppins',sans-serif;
+scroll-behavior:smooth;
+}
+
+body{
+background:#eef3fb;
+color:#222;
+overflow-x:hidden;
+}
+
+header{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+padding:18px 8%;
+display:flex;
+justify-content:space-between;
+align-items:center;
+background:rgba(0,0,0,.35);
+backdrop-filter:blur(15px);
+z-index:1000;
+}
+
+.logo{
+font-size:28px;
+font-weight:700;
+color:#fff;
+}
+
+nav{
+display:flex;
+gap:25px;
+}
+
+nav a{
+text-decoration:none;
+color:white;
+font-weight:500;
+transition:.3s;
+}
+
+nav a:hover{
+color:#ff4444;
+}
+
+.hero{
+height:100vh;
+background:
+linear-gradient(rgba(0,0,0,.45),rgba(0,0,0,.45)),
+url("https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?auto=format&fit=crop&w=1600&q=80");
+background-size:cover;
+background-position:center;
+display:flex;
+justify-content:center;
+align-items:center;
+text-align:center;
+padding:30px;
+}
+
+.hero-content{
+max-width:700px;
+color:white;
+animation:fade 1.2s;
+}
+
+.hero h1{
+font-size:58px;
+margin-bottom:20px;
+}
+
+.hero p{
+font-size:20px;
+line-height:1.8;
+margin-bottom:35px;
+}
+
+.btn{
+display:inline-block;
+padding:15px 38px;
+border-radius:50px;
+text-decoration:none;
+font-weight:bold;
+transition:.3s;
+}
+
+.primary{
+background:#ff3d00;
+color:white;
+}
+
+.primary:hover{
+transform:translateY(-4px);
+background:#ff5722;
+}
+
+.secondary{
+border:2px solid white;
+color:white;
+margin-left:12px;
+}
+
+.secondary:hover{
+background:white;
+color:#1565c0;
+}
+
+section{
+display:none;
+padding:120px 8% 80px;
+animation:fade .5s;
+}
+
+#home{
+display:block;
+padding:0;
+}
+
+.container{
+max-width:1200px;
+margin:auto;
+}
+
+.title{
+text-align:center;
+font-size:42px;
+margin-bottom:20px;
+color:#1565c0;
+}
+
+.subtitle{
+text-align:center;
+max-width:700px;
+margin:auto;
+margin-bottom:50px;
+color:#555;
+line-height:1.8;
+}
+
+.cards{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+gap:25px;
+}
+
+.card{
+background:white;
+padding:30px;
+border-radius:18px;
+box-shadow:0 15px 35px rgba(0,0,0,.08);
+transition:.3s;
+}
+
+.card:hover{
+transform:translateY(-8px);
+}
+
+.card h3{
+margin-bottom:15px;
+color:#1565c0;
+}
+
+.card p{
+line-height:1.8;
+color:#666;
+}
+
+.contact-box{
+background:white;
+padding:35px;
+border-radius:18px;
+box-shadow:0 15px 30px rgba(0,0,0,.08);
+max-width:700px;
+margin:auto;
+}
+
+.contact-box input,
+.contact-box textarea{
+width:100%;
+padding:15px;
+margin-bottom:18px;
+border:1px solid #ddd;
+border-radius:10px;
+font-size:16px;
+}
+
+.contact-box button{
+padding:15px;
+width:100%;
+background:#1565c0;
+color:white;
+border:none;
+border-radius:10px;
+font-size:17px;
+cursor:pointer;
+}
+
+footer{
+background:#0d47a1;
+color:white;
+text-align:center;
+padding:30px;
+}
+
+@keyframes fade{
+from{
+opacity:0;
+transform:translateY(25px);
+}
+to{
+opacity:1;
+transform:translateY(0);
+}
+}
+
+@media(max-width:768px){
+
+header{
+flex-direction:column;
+gap:15px;
+}
+
+nav{
+flex-wrap:wrap;
+justify-content:center;
+}
+
+.hero h1{
+font-size:38px;
+}
+
+.hero p{
+font-size:17px;
+}
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+
+<div class="logo">
+Swift Investment
+</div>
+
+<nav>
+<a href="#" onclick="showSection('home')">Home</a>
+<a href="#" onclick="showSection('plans')">Plans</a>
+<a href="#" onclick="showSection('markets')">Markets</a>
+<a href="#" onclick="showSection('about')">About</a>
+<a href="#" onclick="showSection('contact')">Contact</a>
+</nav>
+
+</header>
+
+<section id="home">
+
+<div class="hero">
+
+<div class="hero-content">
+
+<h1>Grow Your Wealth With Confidence</h1>
+
+<p>
+Start your investment journey with a secure platform designed for everyone.
+</p>
+
+<a href="register.html" class="btn primary">
+Start Investing
+</a>
+
+<a href="#" onclick="showSection('plans')" class="btn secondary">
+Investment Plans
+</a>
+
+</div>
+
+</div>
+
+</section>
